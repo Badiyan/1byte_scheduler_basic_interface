@@ -15,7 +15,7 @@ namespace _1byte_scheduler_basic_interface
 
             // compaund assigment   `x &= y`   is equivalent  `x = x & y`
 
-            const byte EMPTY_MASK = 0b00000000; // used for invalid input - index 0 = empty mask
+            const byte NUL_MASK = 0b00000000; // used for invalid input - index 0 = empty mask
             const byte MON_MASK = 0b00000001;
             const byte TUE_MASK = 0b00000010;
             const byte WED_MASK = 0b00000100;
@@ -26,7 +26,7 @@ namespace _1byte_scheduler_basic_interface
 
             byte[] weekDays = new byte[8];
 
-            weekDays[0] = EMPTY_MASK;
+            weekDays[0] = NUL_MASK;
             weekDays[1] = MON_MASK;
             weekDays[2] = TUE_MASK;
             weekDays[3] = WED_MASK;
