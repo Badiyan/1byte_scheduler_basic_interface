@@ -15,6 +15,7 @@ namespace _1byte_scheduler_basic_interface
 
             // compaund assigment   `x &= y`   is equivalent  `x = x & y`
 
+            const byte EMPTY_MASK = 0b00000000;
             const byte MON_MASK = 0b00000001;
             const byte TUE_MASK = 0b00000010;
             const byte WED_MASK = 0b00000100;
@@ -23,41 +24,43 @@ namespace _1byte_scheduler_basic_interface
             const byte SAT_MASK = 0b00100000;
             const byte SUN_MASK = 0b01000000;
 
-            byte[] weekDays = new byte[7];
+            byte[] weekDays = new byte[8];
 
-            weekDays[0] = MON_MASK;
-            weekDays[1] = TUE_MASK;
-            weekDays[2] = WED_MASK;
-            weekDays[3] = THU_MASK;
-            weekDays[4] = FRI_MASK;
-            weekDays[5] = SAT_MASK;
-            weekDays[6] = SUN_MASK;
+            weekDays[0] = EMPTY_MASK;
+            weekDays[1] = MON_MASK;
+            weekDays[2] = TUE_MASK;
+            weekDays[3] = WED_MASK;
+            weekDays[4] = THU_MASK;
+            weekDays[5] = FRI_MASK;
+            weekDays[6] = SAT_MASK;
+            weekDays[7] = SUN_MASK;
 
-            int index = 0;
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
 
-            string leftCornerBox = "";
-
-            int weekDayIndexInt = 0;
-
-            Console.WriteLine("Select the weekday for schedule the training \n Input number only! \n1.Monday\n2.Tuesday\n3.Wednesday\n4.Thursday\n5.Friday\nSaturday\nSunday");
-            
-            string weekDayIndexStr = Console.ReadLine();
-
-            if (!string.IsNullOrWhiteSpace(weekDayIndexStr))
+            while (true)
             {
-                weekDayIndexInt = ParceToInt(weekDayIndexStr);
+                Console.WriteLine("Select the weekday for schedule the training \n Input number only! \n1.Monday\n2.Tuesday\n3.Wednesday\n4.Thursday\n5.Friday\n6.Saturday\n7.Sunday");
+
+                string weekDayIndexStr = Console.ReadLine();
+
+                int weekDayIndexInt = 0;
+
+                if (!string.IsNullOrWhiteSpace(weekDayIndexStr))
+                {
+                    weekDayIndexInt = ParceToInt(weekDayIndexStr);
+                }
+                else
+                {
+                    PrintError("Empty or null input!");
+                    weekDayIndexInt = 0;
+                }
+
+                schedule = SetWeekDay(schedule, weekDays, weekDayIndexInt);
+
+                BytePrint(schedule);
+
+                EndDialog();
             }
-            else
-            {
-                PrintError("Empty or null input!");
-            }
-
-            schedule = SetWeekDay(schedule, weekDays, 0);
-
-
-            BytePrint(schedule);
-
-            EndDialog();
         }
 
         private static int ParceToInt(string value)
@@ -92,9 +95,8 @@ namespace _1byte_scheduler_basic_interface
 
         private static byte SetWeekDay(byte schedule, byte[] weekDays, int index)
         {
-            if ((index < 8) & (index > 0))
+            if ((index < 8) & (index >= 0))
             {
-                index--;
                 schedule = (byte)(schedule | weekDays[index]);
             }
             else
@@ -104,11 +106,13 @@ namespace _1byte_scheduler_basic_interface
             return schedule;
         }        
 
+
+
         private static void PrintError(string errorMSG)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(errorMSG);
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
         }
     }
 }
