@@ -57,7 +57,7 @@ namespace _1byte_scheduler_basic_interface
 
                 schedule = SetWeekDay(schedule, weekDays, weekDayIndexInt);
 
-                BytePrint(schedule);
+                BytePrint(schedule);// TODO: make readable output
 
                 EndDialog();
             }
