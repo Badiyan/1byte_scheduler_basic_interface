@@ -15,7 +15,7 @@ namespace _1byte_scheduler_basic_interface
 
             // compaund assigment   `x &= y`   is equivalent  `x = x & y`
 
-            const byte EMPTY_MASK = 0b00000000;
+            const byte EMPTY_MASK = 0b00000000; // used for invalid input - index 0 = empty mask
             const byte MON_MASK = 0b00000001;
             const byte TUE_MASK = 0b00000010;
             const byte WED_MASK = 0b00000100;
@@ -37,9 +37,11 @@ namespace _1byte_scheduler_basic_interface
 
             Console.ForegroundColor = ConsoleColor.DarkGreen;
 
+            string[] weekDaysNames = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+
             while (true)
             {
-                Console.WriteLine("Select the weekday for schedule the training \n Input number only! \n1.Monday\n2.Tuesday\n3.Wednesday\n4.Thursday\n5.Friday\n6.Saturday\n7.Sunday");
+                Console.WriteLine("Select the weekday for schedule the training \n Input number only! \n1.{0}\n2.{1}\n3.{2}\n4.{3}\n5.{4}\n6.{5}\n7.{6}", weekDaysNames);
 
                 string weekDayIndexStr = Console.ReadLine();
 
@@ -57,9 +59,27 @@ namespace _1byte_scheduler_basic_interface
 
                 schedule = SetWeekDay(schedule, weekDays, weekDayIndexInt);
 
-                BytePrint(schedule);// TODO: make readable output
 
+                Console.WriteLine("Scheduler:\n");
+                for (int i = 1; i < 8; i++)
+                {
+                    Console.WriteLine("{0}:{1}\n", weekDaysNames[i-1], GetWeekDayFlag(schedule, weekDays, i));
+                }     
+                
                 EndDialog();
+            }
+        }
+
+        private static int GetWeekDayFlag(byte schedule, byte[] weekDays, int i)
+        {
+            if ((schedule & weekDays[i]) > 0)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+  
             }
         }
 
@@ -104,9 +124,9 @@ namespace _1byte_scheduler_basic_interface
                 PrintError("Invalid index for weekdays array");
             }
             return schedule;
-        }        
+        }
 
-
+        
 
         private static void PrintError(string errorMSG)
         {
