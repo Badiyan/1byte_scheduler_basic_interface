@@ -43,7 +43,10 @@ namespace _1byte_scheduler_basic_interface
                 weekDays[6] = SAT_MASK;
                 weekDays[7] = SUN_MASK;
 
-                Console.WriteLine("Select the weekday for schedule the training \n Input number only! \n1.{0}\n2.{1}\n3.{2}\n4.{3}\n5.{4}\n6.{5}\n7.{6}", weekDaysNames);
+                printArt();
+
+                Console.WriteLine("Select the weekday for schedule the training \n !!! Input number only !!! ");
+                Console.WriteLine("\n1.{0}\n2.{1}\n3.{2}\n4.{3}\n5.{4}\n6.{5}\n7.{6}", weekDaysNames);
 
                 string weekDayIndexStr = Console.ReadLine();
 
@@ -67,6 +70,8 @@ namespace _1byte_scheduler_basic_interface
 
                 int maxWordSize = 10;
 
+                printArt();
+
                 HeaderColumns(weekDaysNames, maxWordSize);
 
                 EmptyColumns(maxWordSize);
@@ -81,6 +86,14 @@ namespace _1byte_scheduler_basic_interface
 
                 Console.Clear();
             }
+        }
+
+        private static void printArt()
+        {
+            Console.WriteLine(
+@" o   \ o /  _ o         __|    \ /     |__        o _  \ o /   o
+/|\    |     /\   ___\o   \o    |    o/    o/__   /\     |    /|\
+/ \   / \   | \  /)  |    ( \  /o\  / )    |  (\  / |   / \   / \ " + "\n");
         }
 
         private static void BottomColumns(int maxWordSize)
@@ -208,7 +221,7 @@ namespace _1byte_scheduler_basic_interface
             }
             else
             {
-                PrintError("Invalid index for weekdays array");
+                PrintError("Invalid weekdays number");
             }
             return schedule;
         }
