@@ -24,23 +24,25 @@ namespace _1byte_scheduler_basic_interface
             const byte SAT_MASK = 0b00100000;
             const byte SUN_MASK = 0b01000000;
 
-            byte[] weekDays = new byte[8];
 
-            weekDays[0] = NUL_MASK;
-            weekDays[1] = MON_MASK;
-            weekDays[2] = TUE_MASK;
-            weekDays[3] = WED_MASK;
-            weekDays[4] = THU_MASK;
-            weekDays[5] = FRI_MASK;
-            weekDays[6] = SAT_MASK;
-            weekDays[7] = SUN_MASK;
 
-            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.ForegroundColor = ConsoleColor.Cyan;
 
             string[] weekDaysNames = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
 
             while (true)
             {
+                byte[] weekDays = new byte[8];
+
+                weekDays[0] = NUL_MASK;
+                weekDays[1] = MON_MASK;
+                weekDays[2] = TUE_MASK;
+                weekDays[3] = WED_MASK;
+                weekDays[4] = THU_MASK;
+                weekDays[5] = FRI_MASK;
+                weekDays[6] = SAT_MASK;
+                weekDays[7] = SUN_MASK;
+
                 Console.WriteLine("Select the weekday for schedule the training \n Input number only! \n1.{0}\n2.{1}\n3.{2}\n4.{3}\n5.{4}\n6.{5}\n7.{6}", weekDaysNames);
 
                 string weekDayIndexStr = Console.ReadLine();
@@ -59,26 +61,111 @@ namespace _1byte_scheduler_basic_interface
 
                 schedule = SetWeekDay(schedule, weekDays, weekDayIndexInt);
 
-
-                Console.WriteLine("Scheduler:\n");
-                for (int i = 1; i < 8; i++)
-                {
-                    Console.WriteLine("{0}:{1}\n", weekDaysNames[i-1], GetWeekDayFlag(schedule, weekDays, i));
-                }     
-                
                 EndDialog();
+
+                Console.Clear();
+
+                int maxWordSize = 10;
+
+                HeaderColumns(weekDaysNames, maxWordSize);
+
+                EmptyColumns(maxWordSize);
+
+                FilledColumns(schedule, weekDays, maxWordSize);
+
+                EmptyColumns(maxWordSize);
+
+                BottomColumns(maxWordSize);
+
+                EndDialog();
+
+                Console.Clear();
             }
         }
 
-        private static int GetWeekDayFlag(byte schedule, byte[] weekDays, int i)
+        private static void BottomColumns(int maxWordSize)
+        {
+            Console.Write("╚");
+            string bottomString = new string('═', maxWordSize + 2);
+            for (int i = 0; i < 7; i++)
+            {
+                Console.Write(bottomString);
+
+                if (i < 6)
+                {
+                    Console.Write("╩");
+                }
+            }
+            Console.Write("╝");
+            Console.Write("\n");
+        }
+
+        private static void FilledColumns(byte schedule, byte[] weekDays, int maxWordSize)
+        {
+            string whitespaces2 = new string(' ', maxWordSize / 2);
+            Console.Write("║");
+            for (int i = 0; i < 7; i++)
+            {
+                Console.Write(whitespaces2);
+                if ((schedule & weekDays[i+1]) > 0)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                }
+                Console.Write(" {0}", GetWeekDayFlag(schedule, weekDays, i + 1));
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.Write(whitespaces2);
+                Console.Write("║");
+            }
+            Console.Write("\n");
+        }
+
+        private static void HeaderColumns(string[] weekDaysNames, int maxWordSize)
+        {
+            Console.Write("╔");
+            for (int i = 0; i < 7; i++)
+            {
+                int compenseSize = maxWordSize - weekDaysNames[i].Length;
+                Console.Write("═{0}═", weekDaysNames[i]);
+                int cnt = 0;
+                while (cnt != compenseSize)
+                {
+                    Console.Write("═");
+                    cnt += 1;
+                }
+                if (i < 6)
+                {
+                    Console.Write("╦");
+                }
+
+            }
+            Console.Write("╗ \n");
+        }
+
+        private static void EmptyColumns(int maxWordSize)
+        {
+            Console.Write("║");
+            string whitespaces = new string(' ', maxWordSize + 2);
+            for (int i = 0; i < 7; i++)
+            {
+                Console.Write(whitespaces);
+                Console.Write("║");
+            }
+            Console.Write("\n");
+        }
+
+        private static char GetWeekDayFlag(byte schedule, byte[] weekDays, int i)
         {
             if ((schedule & weekDays[i]) > 0)
             {
-                return 1;
+                return '✓';
             }
             else
             {
-                return 0;
+                return 'x';
   
             }
         }
@@ -132,7 +219,7 @@ namespace _1byte_scheduler_basic_interface
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(errorMSG);
-            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.ForegroundColor = ConsoleColor.Cyan;
         }
     }
 }
