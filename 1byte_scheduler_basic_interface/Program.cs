@@ -23,16 +23,20 @@ namespace _1byte_scheduler_basic_interface
             const byte FRI_MASK = 0b00010000;
             const byte SAT_MASK = 0b00100000;
             const byte SUN_MASK = 0b01000000;
+            const ushort PWD_MASK = 0x1F2F;
 
 
 
             Console.ForegroundColor = ConsoleColor.Cyan;
 
             string[] weekDaysNames = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+            string userSecret = "";
+
 
             while (true)
             {
                 byte[] weekDays = new byte[8];
+                int maxWordSize = 10;
 
                 weekDays[0] = NUL_MASK;
                 weekDays[1] = MON_MASK;
@@ -45,30 +49,11 @@ namespace _1byte_scheduler_basic_interface
 
                 printArt();
 
-                Console.WriteLine("Select the weekday for schedule the training \n !!! Input number only !!! ");
-                Console.WriteLine("\n1.{0}\n2.{1}\n3.{2}\n4.{3}\n5.{4}\n6.{5}\n7.{6}", weekDaysNames);
-
-                string weekDayIndexStr = Console.ReadLine();
-
-                int weekDayIndexInt = 0;
-
-                if (!string.IsNullOrWhiteSpace(weekDayIndexStr))
-                {
-                    weekDayIndexInt = ParceToInt(weekDayIndexStr);
-                }
-                else
-                {
-                    PrintError("Empty or null input!");
-                    weekDayIndexInt = 0;
-                }
-
-                schedule = SetWeekDay(schedule, weekDays, weekDayIndexInt);
+                FirstDialog(ref schedule, PWD_MASK, weekDaysNames, ref userSecret, weekDays);
 
                 EndDialog();
 
                 Console.Clear();
-
-                int maxWordSize = 10;
 
                 printArt();
 
@@ -82,10 +67,157 @@ namespace _1byte_scheduler_basic_interface
 
                 BottomColumns(maxWordSize);
 
+                MoreOptionsMenu(ref schedule, NUL_MASK, PWD_MASK, ref userSecret);
+
                 EndDialog();
 
                 Console.Clear();
             }
+        }
+
+        private static void FirstDialog(ref byte schedule, ushort PWD_MASK, string[] weekDaysNames, ref string userSecret, byte[] weekDays)
+        {
+            int userInputInt = 1;
+            Console.WriteLine("Select option:\n1. Show scheduller \n2. Change scheduler \n3. Set password\n 0. Exit");
+            string userInput = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(userInput))
+            {
+                userInputInt = ParceToInt(userInput);
+            }
+            else
+            {
+                PrintError("Empty or null input!");
+                userInputInt = 1;
+            }
+
+            if ((userInputInt == 1) | (userInputInt == 2) | (userInputInt == 3) | (userInputInt == 0))
+
+            {
+                if (userInputInt == 2)
+                {
+                    Console.Clear();
+                    schedule = GetInput(schedule, weekDaysNames, weekDays);
+                }
+
+                if (userInputInt == 3)
+                {
+                    Console.Clear();
+                    userSecret = GetAndCryptPassword(PWD_MASK);
+                }
+
+                if (userInputInt == 0)
+                {
+                    Environment.Exit(0);
+                }
+            }
+            else
+            {
+                PrintError("Incorrect option!");
+            }
+        }
+
+        private static void MoreOptionsMenu(ref byte schedule, byte NUL_MASK, ushort PWD_MASK, ref string userSecret)
+        {
+            Console.WriteLine("Choose next option: \n 1.Return \n 2. Set password \n 3. Clear scheduler (Password needed)");
+            string optionsDialog = Console.ReadLine();
+            int optionsDialogInt = 1;
+
+            if (!string.IsNullOrWhiteSpace(optionsDialog))
+            {
+                optionsDialogInt = ParceToInt(optionsDialog);
+            }
+            else
+            {
+                PrintError("Empty or null input!");
+                optionsDialogInt = 1;
+            }
+
+            if ((optionsDialogInt == 1) | (optionsDialogInt == 2) | (optionsDialogInt == 3))
+
+            {
+                if (optionsDialogInt == 2)
+                {
+                    userSecret = GetAndCryptPassword(PWD_MASK);
+                }
+
+                if (optionsDialogInt == 3)
+                {
+                    schedule = ClearScheduler(schedule, NUL_MASK, PWD_MASK, userSecret);
+                }
+            }
+            else
+            {
+                PrintError("Incorrect option!");
+            }
+        }
+
+        private static byte ClearScheduler(byte schedule, byte NUL_MASK, ushort PWD_MASK, string userSecret)
+        {
+            if (userSecret == "")
+            {
+                Console.WriteLine("Set the password first");
+            }
+            else
+            {
+                Console.WriteLine("Input password for clear Scheduller:");
+                string tryPassword = Console.ReadLine();
+                if (tryPassword == Crypt(PWD_MASK, userSecret))
+                {
+                    schedule = NUL_MASK;
+                    Console.WriteLine("Schedule cleared!");
+                }
+                else
+                {
+                    PrintError("Incorrect password");
+                }
+            }
+
+            return schedule;
+        }
+
+        private static string GetAndCryptPassword(ushort PWD_MASK)
+        {
+            string userSecret;
+            Console.WriteLine("Input password:");
+            string userPasswordUnmasked = Console.ReadLine();
+            userSecret = Crypt(PWD_MASK, userPasswordUnmasked);
+            Console.WriteLine("Password saved");
+            return userSecret;
+        }
+
+        private static string Crypt(ushort PWD_MASK, string password)
+        {
+            string userPasswordMasked = "";
+            for (int i = 0; i < password.Length; i++)
+            {
+                userPasswordMasked = userPasswordMasked + (char)((ushort)password[i] ^ PWD_MASK);
+            }
+            return userPasswordMasked;
+        }
+
+        private static byte GetInput(byte schedule, string[] weekDaysNames, byte[] weekDays)
+        {
+            printArt();
+
+            Console.WriteLine("Select the weekday for schedule the training \n !!! Input number only !!! ");
+            Console.WriteLine("\n1.{0}\n2.{1}\n3.{2}\n4.{3}\n5.{4}\n6.{5}\n7.{6}", weekDaysNames);
+
+            string weekDayIndexStr = Console.ReadLine();
+
+            int weekDayIndexInt = 0;
+
+            if (!string.IsNullOrWhiteSpace(weekDayIndexStr))
+            {
+                weekDayIndexInt = ParceToInt(weekDayIndexStr);
+            }
+            else
+            {
+                PrintError("Empty or null input!");
+                weekDayIndexInt = 0;
+            }
+
+            schedule = SetWeekDay(schedule, weekDays, weekDayIndexInt);
+            return schedule;
         }
 
         private static void printArt()
@@ -193,7 +325,7 @@ namespace _1byte_scheduler_basic_interface
             }
             else
             {
-                Console.WriteLine($"Attempted conversion of '{value ?? "<null>"}' failed.");
+               // Console.WriteLine($"Attempted conversion of '{value ?? "<null>"}' failed.");
             }
 
             return number;
@@ -201,8 +333,8 @@ namespace _1byte_scheduler_basic_interface
 
         private static void EndDialog()
         {
-            Console.Write("Press <Enter> to next... Any other key for exit ");
-            while (Console.ReadKey().Key != ConsoleKey.Enter)
+            Console.Write("Press <Esc> to exit... Any other key for continue");
+            if (Console.ReadKey().Key == ConsoleKey.Escape)
             {
                 Environment.Exit(0);
             }
