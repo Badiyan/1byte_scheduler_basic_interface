@@ -11,9 +11,6 @@ namespace _1byte_scheduler_basic_interface
         static void Main(string[] args)
         {
             byte schedule = new byte();
-            //Console.WriteLine("{0}", Convert.ToString(schedule,2));
-
-            // compaund assigment   `x &= y`   is equivalent  `x = x & y`
 
             const byte NUL_MASK = 0b00000000; // used for invalid input - index 0 = empty mask
             const byte MON_MASK = 0b00000001;
@@ -25,28 +22,14 @@ namespace _1byte_scheduler_basic_interface
             const byte SUN_MASK = 0b01000000;
             const ushort PWD_MASK = 0x1F2F;
 
-
-
             Console.ForegroundColor = ConsoleColor.Cyan;
 
             string[] weekDaysNames = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+            byte[] weekDays = { NUL_MASK, MON_MASK, TUE_MASK, WED_MASK, THU_MASK, FRI_MASK, SAT_MASK, SUN_MASK };
             string userSecret = "";
-
-
+            
             while (true)
             {
-                byte[] weekDays = new byte[8];
-                int maxWordSize = 10;
-
-                weekDays[0] = NUL_MASK;
-                weekDays[1] = MON_MASK;
-                weekDays[2] = TUE_MASK;
-                weekDays[3] = WED_MASK;
-                weekDays[4] = THU_MASK;
-                weekDays[5] = FRI_MASK;
-                weekDays[6] = SAT_MASK;
-                weekDays[7] = SUN_MASK;
-
                 printArt();
 
                 FirstDialog(ref schedule, PWD_MASK, weekDaysNames, ref userSecret, weekDays);
@@ -56,6 +39,8 @@ namespace _1byte_scheduler_basic_interface
                 Console.Clear();
 
                 printArt();
+
+                int maxWordSize = 10;
 
                 HeaderColumns(weekDaysNames, maxWordSize);
 
@@ -77,18 +62,8 @@ namespace _1byte_scheduler_basic_interface
 
         private static void FirstDialog(ref byte schedule, ushort PWD_MASK, string[] weekDaysNames, ref string userSecret, byte[] weekDays)
         {
-            int userInputInt = 1;
             Console.WriteLine("Select option:\n1. Show scheduller \n2. Change scheduler \n3. Set password\n 0. Exit");
-            string userInput = Console.ReadLine();
-            if (!string.IsNullOrWhiteSpace(userInput))
-            {
-                userInputInt = ParceToInt(userInput);
-            }
-            else
-            {
-                PrintError("Empty or null input!");
-                userInputInt = 1;
-            }
+            int userInputInt = ValidateInput();
 
             if ((userInputInt == 1) | (userInputInt == 2) | (userInputInt == 3) | (userInputInt == 0))
 
@@ -116,32 +91,40 @@ namespace _1byte_scheduler_basic_interface
             }
         }
 
-        private static void MoreOptionsMenu(ref byte schedule, byte NUL_MASK, ushort PWD_MASK, ref string userSecret)
+        private static int ValidateInput()
         {
-            Console.WriteLine("Choose next option: \n 1.Return \n 2. Set password \n 3. Clear scheduler (Password needed)");
-            string optionsDialog = Console.ReadLine();
-            int optionsDialogInt = 1;
-
-            if (!string.IsNullOrWhiteSpace(optionsDialog))
+            int userInputInt;
+            string userInput = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(userInput))
             {
-                optionsDialogInt = ParceToInt(optionsDialog);
+                userInputInt = ParceToInt(userInput);
             }
             else
             {
                 PrintError("Empty or null input!");
-                optionsDialogInt = 1;
+                userInputInt = 1;
             }
+
+            return userInputInt;
+        }
+
+        private static void MoreOptionsMenu(ref byte schedule, byte NUL_MASK, ushort PWD_MASK, ref string userSecret)
+        {
+            Console.WriteLine("Choose next option: \n 1.Return \n 2. Set password \n 3. Clear scheduler (Password needed)");
+            int optionsDialogInt = ValidateInput();
 
             if ((optionsDialogInt == 1) | (optionsDialogInt == 2) | (optionsDialogInt == 3))
 
             {
                 if (optionsDialogInt == 2)
                 {
+                    Console.Clear();
                     userSecret = GetAndCryptPassword(PWD_MASK);
                 }
 
                 if (optionsDialogInt == 3)
                 {
+                    Console.Clear();
                     schedule = ClearScheduler(schedule, NUL_MASK, PWD_MASK, userSecret);
                 }
             }
